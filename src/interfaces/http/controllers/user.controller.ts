@@ -17,24 +17,24 @@ export class UserController {
    */
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      console.log('Datos recibidos:', req.body);
+      console.log('Received data:', req.body);
 
-      // Validar datos de entrada
+      // Validate input data
       const result = createUserSchema.safeParse(req.body);
       if (!result.success) {
-        console.log('Error de validación:', result.error);
+        console.log('Validation error:', result.error);
         return res.status(400).json({
-          error: 'Datos inválidos',
+          error: 'Invalid data',
           details: result.error.errors,
         });
       }
 
       const { email, name, password } = result.data;
 
-      // Ejecutar caso de uso
+      // Execute use case
       const user = await this.createUserUseCase.execute(email, name, password);
 
-      // Retornar respuesta exitosa
+      // Return success response
       return res.status(201).json({
         id: user.getId(),
         email: user.getEmail(),
@@ -42,30 +42,30 @@ export class UserController {
         createdAt: user.getCreatedAt(),
       });
     } catch (error) {
-      console.error('Error en el controlador:', error);
+      console.error('Controller error:', error);
       if (error instanceof Error) {
-        // Manejar error de email duplicado
-        if (error.message.includes('Ya existe un usuario con este email')) {
+        // Handle duplicate email error
+        if (error.message.includes('Email already exists')) {
           return res.status(409).json({
-            error: 'Email en uso',
+            error: 'Email in use',
             message: error.message,
           });
         }
 
-        // Manejar otros errores de validación
-        if (error.message.includes('Error al crear usuario')) {
+        // Handle other validation errors
+        if (error.message.includes('Error creating user')) {
           return res.status(400).json({
-            error: 'Error de validación',
+            error: 'Validation error',
             message: error.message,
           });
         }
       }
 
-      // Error inesperado
-      console.error('Error inesperado:', error);
+      // Unexpected error
+      console.error('Unexpected error:', error);
       return res.status(500).json({
-        error: 'Error interno del servidor',
-        message: 'Ocurrió un error inesperado',
+        error: 'Internal server error',
+        message: 'An unexpected error occurred',
       });
     }
   }

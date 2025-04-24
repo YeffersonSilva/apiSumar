@@ -22,17 +22,17 @@ export class User {
   }
 
   public static create(email: string, name: string, password: string): User {
-    // Validaciones básicas
+    // Basic validations
     if (!email || !email.includes('@')) {
-      throw new Error('Email inválido');
+      throw new Error('Invalid email format');
     }
 
     if (!name || name.length < 2) {
-      throw new Error('El nombre debe tener al menos 2 caracteres');
+      throw new Error('Name must be at least 2 characters long');
     }
 
     if (!password || password.length < 6) {
-      throw new Error('La contraseña debe tener al menos 6 caracteres');
+      throw new Error('Password must be at least 6 characters long');
     }
 
     return new User(
