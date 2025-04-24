@@ -4,6 +4,7 @@ import app from '../app';
 import { PrismaUserRepository } from '../infrastructure/prisma/user.repository';
 import { CreateUserUseCase } from '../application/use-cases/create-user.use-case';
 import { UserController } from '../interfaces/http/controllers/user.controller';
+import { createUserRoutes } from '../interfaces/http/routes/user.routes';
 
 describe('User Registration', () => {
   let prisma: PrismaClient;
@@ -17,8 +18,9 @@ describe('User Registration', () => {
     createUserUseCase = new CreateUserUseCase(userRepository);
     userController = new UserController(createUserUseCase);
 
-    // Configurar la ruta
-    app.post('/users', (req, res) => userController.create(req, res));
+    // Configurar las rutas
+    const userRoutes = createUserRoutes(userController);
+    app.use('/users', userRoutes);
   });
 
   beforeEach(async () => {
