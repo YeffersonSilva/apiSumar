@@ -2,6 +2,14 @@ import { PrismaClient } from '@prisma/client';
 import { User } from '../../domain/user/User';
 import { UserRepository } from '../../domain/user/UserRepository';
 
+/**
+ * Implementación del repositorio de usuarios usando Prisma.
+ *
+ * NOTA DE SEGURIDAD:
+ * Esta implementación almacena las contraseñas en texto plano.
+ * SOLO USAR EN ENTORNO DE DESARROLLO.
+ * Para producción, implementar hashing de contraseñas.
+ */
 export class PrismaUserRepository implements UserRepository {
   private prisma: PrismaClient;
 
@@ -15,7 +23,7 @@ export class PrismaUserRepository implements UserRepository {
         id: user.getId(),
         email: user.getEmail(),
         name: user.getName(),
-        password: user.getPassword(),
+        password: user.getPassword(), // TODO: Implementar hashing en producción
         createdAt: user.getCreatedAt(),
       },
     });
