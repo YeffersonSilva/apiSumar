@@ -19,31 +19,49 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async create(user: User): Promise<User> {
-    // Hashear la contraseña antes de persistir
-    const hashedPassword = await PasswordService.hash(user.getPassword());
+    try {
+      // Hash password before persisting
+      const hashedPassword = await PasswordService.hash(user.getPassword());
 
-    const prismaUser = await this.prisma.user.create({
-      data: {
-        id: user.getId(),
-        email: user.getEmail(),
-        name: user.getName(),
-        password: hashedPassword,
-        createdAt: user.getCreatedAt(),
-      },
-    });
+      const prismaUser = await this.prisma.user.create({
+        data: {
+          id: user.getId(),
+          email: user.getEmail(),
+          name: user.getName(),
+          password: hashedPassword,
+          createdAt: user.getCreatedAt(),
+        },
+      });
 
-    return User.create(prismaUser.email, prismaUser.name, prismaUser.password);
+      return User.create(
+        prismaUser.email,
+        prismaUser.name,
+        prismaUser.password,
+      );
+    } catch (error) {
+      console.error('Error creating user in repository:', error);
+      throw new Error('Failed to create user in database');
+    }
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const prismaUser = await this.prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
+    try {
+      const prismaUser = await this.prisma.user.findUnique({
+        where: { email: email.toLowerCase() },
+      });
 
-    if (!prismaUser) {
-      return null;
+      if (!prismaUser) {
+        return null;
+      }
+
+      return User.create(
+        prismaUser.email,
+        prismaUser.name,
+        prismaUser.password,
+      );
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      throw new Error('Failed to find user in database');
     }
-
-    return User.create(prismaUser.email, prismaUser.name, prismaUser.password);
   }
 }
