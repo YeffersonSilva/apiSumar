@@ -106,5 +106,19 @@ describe('User Registration', () => {
       expect(response.body).toHaveProperty('error');
       expect(response.body.error).toBe('Datos inválidos');
     });
+
+    it('should reject registration with missing required fields', async () => {
+      const incompleteUser = {
+        email: 'test@example.com',
+        // Falta name
+        password: 'password123',
+      };
+
+      const response = await request(app).post('/users').send(incompleteUser);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toBe('Datos inválidos');
+    });
   });
 });
