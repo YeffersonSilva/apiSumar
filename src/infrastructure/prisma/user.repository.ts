@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { User } from '../../domain/user/User';
 import { UserRepository } from '../../domain/user/UserRepository';
+import { PasswordService } from '../services/password.service';
 
 /**
  * Implementación del repositorio de usuarios usando Prisma.
@@ -18,12 +19,15 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async create(user: User): Promise<User> {
+    // Hashear la contraseña antes de persistir
+    const hashedPassword = await PasswordService.hash(user.getPassword());
+
     const prismaUser = await this.prisma.user.create({
       data: {
         id: user.getId(),
         email: user.getEmail(),
         name: user.getName(),
-        password: user.getPassword(), // TODO: Implementar hashing en producción
+        password: hashedPassword,
         createdAt: user.getCreatedAt(),
       },
     });
