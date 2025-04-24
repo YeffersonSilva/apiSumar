@@ -17,9 +17,12 @@ export class UserController {
    */
   async create(req: Request, res: Response): Promise<Response> {
     try {
+      console.log('Datos recibidos:', req.body);
+
       // Validar datos de entrada
       const result = createUserSchema.safeParse(req.body);
       if (!result.success) {
+        console.log('Error de validación:', result.error);
         return res.status(400).json({
           error: 'Datos inválidos',
           details: result.error.errors,
@@ -39,6 +42,7 @@ export class UserController {
         createdAt: user.getCreatedAt(),
       });
     } catch (error) {
+      console.error('Error en el controlador:', error);
       if (error instanceof Error) {
         // Manejar error de email duplicado
         if (error.message.includes('Ya existe un usuario con este email')) {
