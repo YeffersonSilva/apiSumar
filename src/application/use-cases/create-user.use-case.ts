@@ -16,6 +16,7 @@ export class CreateUserUseCase {
       const user = User.create(email, name, password);
 
       // Persistir el usuario
+      
       return await this.userRepository.create(user);
     } catch (error) {
       if (error instanceof Error) {
