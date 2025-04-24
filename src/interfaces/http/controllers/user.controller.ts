@@ -2,9 +2,19 @@ import { Request, Response } from 'express';
 import { CreateUserUseCase } from '../../../application/use-cases/create-user.use-case';
 import { createUserSchema } from '../dtos/create-user.dto';
 
+/**
+ * Controlador para operaciones relacionadas con usuarios.
+ * Implementa los endpoints HTTP y maneja las respuestas.
+ */
 export class UserController {
   constructor(private readonly createUserUseCase: CreateUserUseCase) {}
 
+  /**
+   * Crea un nuevo usuario.
+   * @param req Request HTTP
+   * @param res Response HTTP
+   * @returns Response con el usuario creado o error
+   */
   async create(req: Request, res: Response): Promise<Response> {
     try {
       // Validar datos de entrada
