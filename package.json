@@ -51,6 +51,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "apisumar": "file:",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
