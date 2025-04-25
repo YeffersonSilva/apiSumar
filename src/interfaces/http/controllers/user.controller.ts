@@ -1,13 +1,31 @@
 import { Request, Response } from 'express';
 import { CreateUserUseCase } from '../../../application/use-cases/create-user.use-case';
 import { createUserSchema } from '../dtos/create-user.dto';
+import { UuidService } from '../../../infrastructure/services/uuid.service';
+import { PrismaUserRepository } from '../../../infrastructure/prisma/user.repository';
+import { EmailNotificationService } from '../../../infrastructure/services/email-notification.service';
+import {
+  UserAlreadyExistsError,
+  InvalidUserDataError,
+} from '../../../domain/errors/user.error';
 
 /**
  * Controlador para operaciones relacionadas con usuarios.
  * Implementa los endpoints HTTP y maneja las respuestas.
  */
 export class UserController {
-  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  private readonly createUserUseCase: CreateUserUseCase;
+
+  constructor() {
+    const idService = new UuidService();
+    const userRepository = new PrismaUserRepository(idService);
+    const notificationService = new EmailNotificationService();
+    this.createUserUseCase = new CreateUserUseCase(
+      userRepository,
+      idService,
+      notificationService,
+    );
+  }
 
   /**
    * Crea un nuevo usuario.
@@ -17,21 +35,24 @@ export class UserController {
    */
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      // Validar datos de entrada
+      console.log('Received data:', req.body);
+
+      // Validate input data
       const result = createUserSchema.safeParse(req.body);
       if (!result.success) {
+        console.log('Validation error:', result.error);
         return res.status(400).json({
-          error: 'Datos inválidos',
+          error: 'Invalid data',
           details: result.error.errors,
         });
       }
 
       const { email, name, password } = result.data;
 
-      // Ejecutar caso de uso
+      // Execute use case
       const user = await this.createUserUseCase.execute(email, name, password);
 
-      // Retornar respuesta exitosa
+      // Return success response
       return res.status(201).json({
         id: user.getId(),
         email: user.getEmail(),
@@ -39,29 +60,27 @@ export class UserController {
         createdAt: user.getCreatedAt(),
       });
     } catch (error) {
-      if (error instanceof Error) {
-        // Manejar error de email duplicado
-        if (error.message.includes('Ya existe un usuario con este email')) {
-          return res.status(409).json({
-            error: 'Email en uso',
-            message: error.message,
-          });
-        }
+      console.error('Controller error:', error);
 
-        // Manejar otros errores de validación
-        if (error.message.includes('Error al crear usuario')) {
-          return res.status(400).json({
-            error: 'Error de validación',
-            message: error.message,
-          });
-        }
+      if (error instanceof UserAlreadyExistsError) {
+        return res.status(409).json({
+          error: 'User already exists',
+          message: error.message,
+        });
       }
 
-      // Error inesperado
-      console.error('Error inesperado:', error);
+      if (error instanceof InvalidUserDataError) {
+        return res.status(400).json({
+          error: 'Invalid user data',
+          message: error.message,
+        });
+      }
+
+      // Unexpected error
+      console.error('Unexpected error:', error);
       return res.status(500).json({
-        error: 'Error interno del servidor',
-        message: 'Ocurrió un error inesperado',
+        error: 'Internal server error',
+        message: 'An unexpected error occurred',
       });
     }
   }

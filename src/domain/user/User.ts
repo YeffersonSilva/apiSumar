@@ -1,3 +1,5 @@
+import { IdService } from '../services/id.service';
+
 export class User {
   private readonly id: string;
   private readonly email: string;
@@ -19,22 +21,27 @@ export class User {
     this.createdAt = createdAt;
   }
 
-  public static create(email: string, name: string, password: string): User {
-    // Validaciones básicas
+  public static create(
+    email: string,
+    name: string,
+    password: string,
+    idService: IdService,
+  ): User {
+    // Basic validations
     if (!email || !email.includes('@')) {
-      throw new Error('Email inválido');
+      throw new Error('Invalid email format');
     }
 
     if (!name || name.length < 2) {
-      throw new Error('El nombre debe tener al menos 2 caracteres');
+      throw new Error('Name must be at least 2 characters long');
     }
 
     if (!password || password.length < 6) {
-      throw new Error('La contraseña debe tener al menos 6 caracteres');
+      throw new Error('Password must be at least 6 characters long');
     }
 
     return new User(
-      crypto.randomUUID(),
+      idService.generate(),
       email.toLowerCase().trim(),
       name.trim(),
       password,
