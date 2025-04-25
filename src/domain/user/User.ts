@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { IdService } from '../services/id.service';
 
 export class User {
   private readonly id: string;
@@ -21,7 +21,12 @@ export class User {
     this.createdAt = createdAt;
   }
 
-  public static create(email: string, name: string, password: string): User {
+  public static create(
+    email: string,
+    name: string,
+    password: string,
+    idService: IdService,
+  ): User {
     // Basic validations
     if (!email || !email.includes('@')) {
       throw new Error('Invalid email format');
@@ -36,7 +41,7 @@ export class User {
     }
 
     return new User(
-      randomUUID(),
+      idService.generate(),
       email.toLowerCase().trim(),
       name.trim(),
       password,
