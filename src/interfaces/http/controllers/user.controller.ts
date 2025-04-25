@@ -1,13 +1,31 @@
 import { Request, Response } from 'express';
 import { CreateUserUseCase } from '../../../application/use-cases/create-user.use-case';
 import { createUserSchema } from '../dtos/create-user.dto';
+import { UuidService } from '../../../infrastructure/services/uuid.service';
+import { PrismaUserRepository } from '../../../infrastructure/prisma/user.repository';
+import { EmailNotificationService } from '../../../infrastructure/services/email-notification.service';
+import {
+  UserAlreadyExistsError,
+  InvalidUserDataError,
+} from '../../../domain/errors/user.error';
 
 /**
  * Controlador para operaciones relacionadas con usuarios.
  * Implementa los endpoints HTTP y maneja las respuestas.
  */
 export class UserController {
-  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  private readonly createUserUseCase: CreateUserUseCase;
+
+  constructor() {
+    const idService = new UuidService();
+    const userRepository = new PrismaUserRepository(idService);
+    const notificationService = new EmailNotificationService();
+    this.createUserUseCase = new CreateUserUseCase(
+      userRepository,
+      idService,
+      notificationService,
+    );
+  }
 
   /**
    * Crea un nuevo usuario.
@@ -43,22 +61,19 @@ export class UserController {
       });
     } catch (error) {
       console.error('Controller error:', error);
-      if (error instanceof Error) {
-        // Handle duplicate email error
-        if (error.message.includes('Email already exists')) {
-          return res.status(409).json({
-            error: 'Email in use',
-            message: error.message,
-          });
-        }
 
-        // Handle other validation errors
-        if (error.message.includes('Error creating user')) {
-          return res.status(400).json({
-            error: 'Validation error',
-            message: error.message,
-          });
-        }
+      if (error instanceof UserAlreadyExistsError) {
+        return res.status(409).json({
+          error: 'User already exists',
+          message: error.message,
+        });
+      }
+
+      if (error instanceof InvalidUserDataError) {
+        return res.status(400).json({
+          error: 'Invalid user data',
+          message: error.message,
+        });
       }
 
       // Unexpected error
