@@ -1,138 +1,138 @@
 # API Sumar
 
-API RESTful desarrollada con Node.js, Express y TypeScript siguiendo los principios de Clean Architecture.
+RESTful API developed with Node.js, Express, and TypeScript following Clean Architecture principles.
 
-## 🚀 Características
+## 🚀 Features
 
-- Arquitectura limpia y modular
-- Autenticación de usuarios
-- Base de datos PostgreSQL con Prisma ORM
-- Validación de datos con Zod
-- Seguridad con Helmet y CORS
-- Logging con Morgan
-- Testing con Jest
-- Linting y formateo de código con ESLint y Prettier
+- Clean and modular architecture
+- User authentication
+- PostgreSQL database with Prisma ORM
+- Data validation with Zod
+- Security with Helmet and CORS
+- Logging with Morgan
+- Testing with Jest
+- Code linting and formatting with ESLint and Prettier
 
-## 🛠️ Tecnologías
+## 🛠️ Technologies
 
 - **Backend**: Node.js, Express, TypeScript
-- **Base de datos**: PostgreSQL
+- **Database**: PostgreSQL
 - **ORM**: Prisma
-- **Validación**: Zod
-- **Seguridad**: Helmet, CORS, bcrypt
+- **Validation**: Zod
+- **Security**: Helmet, CORS, bcrypt
 - **Testing**: Jest, Supertest
 - **Linting**: ESLint, Prettier
 
-## 📋 Prerrequisitos
+## 📋 Prerequisites
 
-- Node.js (v18 o superior)
+- Node.js (v18 or higher)
 - PostgreSQL
-- npm o yarn
+- npm or yarn
 
-## 🔧 Instalación
+## 🔧 Installation
 
-1. Clona el repositorio:
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/tu-usuario/api-sumar.git
+   git clone https://github.com/your-username/api-sumar.git
    cd api-sumar
    ```
 
-2. Instala las dependencias:
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-3. Configura las variables de entorno:
-   Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+3. Configure environment variables:
+   Create a `.env` file in the root directory with the following variables:
 
    ```
-   DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/api_sumar"
+   DATABASE_URL="postgresql://user:password@localhost:5432/api_sumar"
    PORT=3000
    ```
 
-4. Genera el cliente de Prisma:
+4. Generate Prisma client:
 
    ```bash
    npm run prisma:generate
    ```
 
-5. Ejecuta las migraciones:
+5. Run migrations:
    ```bash
    npm run prisma:migrate
    ```
 
-## 🚀 Uso
+## 🚀 Usage
 
-### Desarrollo
+### Development
 
 ```bash
 npm run dev
 ```
 
-### Producción
+### Production
 
 ```bash
 npm run build
 npm start
 ```
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 api-sumar/
 ├── src/
-│   ├── application/     # Casos de uso
-│   ├── domain/          # Entidades y reglas de negocio
-│   ├── infrastructure/  # Implementaciones de repositorios
-│   ├── interfaces/      # Controladores y rutas
-│   ├── config/          # Configuración de la aplicación
-│   ├── app.ts           # Configuración de Express
-│   └── index.ts         # Punto de entrada
+│   ├── application/     # Use cases
+│   ├── domain/          # Entities and business rules
+│   ├── infrastructure/  # Repository implementations
+│   ├── interfaces/      # Controllers and routes
+│   ├── config/          # Application configuration
+│   ├── app.ts           # Express configuration
+│   └── index.ts         # Entry point
 ├── prisma/
-│   ├── migrations/      # Migraciones de la base de datos
-│   ├── schema.prisma    # Esquema de la base de datos
-│   └── seed.ts          # Datos iniciales
-├── tests/               # Pruebas
+│   ├── migrations/      # Database migrations
+│   ├── schema.prisma    # Database schema
+│   └── seed.ts          # Seed data
+├── tests/               # Tests
 └── ...
 ```
 
 ## 🧪 Testing
 
 ```bash
-# Ejecutar pruebas
+# Run tests
 npm test
 
-# Ejecutar pruebas en modo watch
+# Run tests in watch mode
 npm run test:watch
 
-# Generar cobertura de pruebas
+# Generate test coverage
 npm run test:coverage
 ```
 
-## 📝 Scripts Disponibles
+## 📝 Available Scripts
 
-- `npm run dev`: Inicia el servidor en modo desarrollo
-- `npm run build`: Compila el proyecto
-- `npm start`: Inicia el servidor en modo producción
-- `npm run lint`: Ejecuta el linter
-- `npm run lint:fix`: Corrige problemas de linting
-- `npm run format`: Formatea el código
-- `npm run test`: Ejecuta las pruebas
-- `npm run prisma:generate`: Genera el cliente de Prisma
-- `npm run prisma:migrate`: Ejecuta las migraciones
-- `npm run prisma:studio`: Abre Prisma Studio
-- `npm run db:setup`: Configura la base de datos
+- `npm run dev`: Start the server in development mode
+- `npm run build`: Build the project
+- `npm start`: Start the server in production mode
+- `npm run lint`: Run the linter
+- `npm run lint:fix`: Fix linting issues
+- `npm run format`: Format the code
+- `npm run test`: Run tests
+- `npm run prisma:generate`: Generate Prisma client
+- `npm run prisma:migrate`: Run migrations
+- `npm run prisma:studio`: Open Prisma Studio
+- `npm run db:setup`: Set up the database
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto está bajo la Licencia ISC.
+This project is licensed under the ISC License.
 
-## 👥 Contribución
+## 👥 Contributing
 
-1. Haz un fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Haz commit de tus cambios (`git commit -m 'feat: add some amazing feature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'feat: add some amazing feature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
