@@ -1,16 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { User } from '../../domain/user/User';
-import { UserRepositoryPort } from '../../domain/ports/user.repository.port';
-import { PasswordService } from '../services/password.service';
-import { IdService } from '../../domain/services/id.service';
+import { User } from '../../domain/user.entity';
+import { UserRepositoryPort } from '../../domain/interfaces/user.repository.interface';
+import { PasswordService } from '../../../shared/services/password.service';
+import { IdService } from '../../domain/interfaces/id.service.interface';
 
 /**
  * Implementación del repositorio de usuarios usando Prisma.
- *
- * NOTA DE SEGURIDAD:
- * Esta implementación almacena las contraseñas en texto plano.
- * SOLO USAR EN ENTORNO DE DESARROLLO.
- * Para producción, implementar hashing de contraseñas.
  */
 export class PrismaUserRepository implements UserRepositoryPort {
   private prisma: PrismaClient;
@@ -21,7 +16,6 @@ export class PrismaUserRepository implements UserRepositoryPort {
 
   async create(user: User): Promise<User> {
     try {
-      // Hash password before persisting
       const hashedPassword = await PasswordService.hash(user.getPassword());
 
       const prismaUser = await this.prisma.user.create({

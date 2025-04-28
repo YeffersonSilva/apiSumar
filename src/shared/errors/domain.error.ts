@@ -4,4 +4,4 @@ export abstract class DomainError extends Error {
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
   }
-}
+} 

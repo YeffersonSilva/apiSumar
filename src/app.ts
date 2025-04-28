@@ -2,29 +2,19 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { env } from './config/env';
-import { PrismaUserRepository } from './infrastructure/prisma/user.repository';
-import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
-import { UserController } from './interfaces/http/controllers/user.controller';
-import { createUserRoutes } from './interfaces/http/routes/user.routes';
+import { UserController } from './user-management/infra/controllers/user.controller';
+import { createUserRoutes } from './user-management/routes/user.routes';
 
 const app = express();
 
 // Middleware de seguridad
 app.use(helmet());
 app.use(cors());
-
-// Middleware de logging
+app.use(express.json());
 app.use(morgan('dev'));
 
-// Middleware para parsear JSON
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Inicializar dependencias
-const userRepository = new PrismaUserRepository();
-const createUserUseCase = new CreateUserUseCase(userRepository);
-const userController = new UserController(createUserUseCase);
+// Inicializar controladores
+const userController = new UserController();
 
 // Configurar rutas
 const userRoutes = createUserRoutes(userController);
@@ -48,4 +38,4 @@ app.use(
   },
 );
 
-export default app;
+export { app };

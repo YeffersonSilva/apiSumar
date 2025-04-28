@@ -1,11 +1,11 @@
-import { User } from '../../domain/user/User';
-import { UserRepositoryPort } from '../../domain/ports/user.repository.port';
-import { IdService } from '../../domain/services/id.service';
-import { NotificationServicePort } from '../../domain/ports/notification.service.port';
+import { User } from '../../domain/user.entity';
+import { UserRepositoryPort } from '../../domain/interfaces/user.repository.interface';
+import { IdService } from '../../domain/interfaces/id.service.interface';
+import { NotificationServicePort } from '../../domain/interfaces/notification.service.interface';
 import {
   UserAlreadyExistsError,
   InvalidUserDataError,
-} from '../../domain/errors/user.error';
+} from '../../../shared/errors/user.error';
 
 export class CreateUserUseCase {
   constructor(

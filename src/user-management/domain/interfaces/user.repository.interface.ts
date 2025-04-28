@@ -1,4 +1,4 @@
-import { User } from '../user/User';
+import { User } from '../user.entity';
 
 /**
  * Puerto que define las operaciones del repositorio de usuarios.
