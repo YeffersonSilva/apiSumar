@@ -1,4 +1,4 @@
-import { IdService } from '../services/id.service';
+import { IdService } from './interfaces/id.service.interface';
 
 export class User {
   private readonly id: string;

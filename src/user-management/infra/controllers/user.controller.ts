@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { CreateUserUseCase } from '../../../application/use-cases/create-user.use-case';
+import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { createUserSchema } from '../dtos/create-user.dto';
-import { UuidService } from '../../../infrastructure/services/uuid.service';
-import { PrismaUserRepository } from '../../../infrastructure/prisma/user.repository';
-import { EmailNotificationService } from '../../../infrastructure/services/email-notification.service';
+import { UuidService } from '../../../shared/services/uuid.service';
+import { PrismaUserRepository } from '../prisma/user.repository';
+import { EmailNotificationService } from '../../../shared/services/email-notification.service';
 import {
   UserAlreadyExistsError,
   InvalidUserDataError,
-} from '../../../domain/errors/user.error';
+} from '../../../shared/errors/user.error';
 
 /**
  * Controlador para operaciones relacionadas con usuarios.

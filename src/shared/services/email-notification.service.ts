@@ -1,5 +1,5 @@
-import { User } from '../../domain/user/User';
-import { NotificationServicePort } from '../../domain/ports/notification.service.port';
+import { User } from '../../user-management/domain/user.entity';
+import { NotificationServicePort } from '../../user-management/domain/interfaces/notification.service.interface';
 
 /**
  * Implementación del servicio de notificación usando email.
