@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
-import app from '../app';
-import { PrismaUserRepository } from '../infrastructure/prisma/user.repository';
-import { CreateUserUseCase } from '../application/use-cases/create-user.use-case';
-import { UserController } from '../interfaces/http/controllers/user.controller';
-import { createUserRoutes } from '../interfaces/http/routes/user.routes';
+import { app } from '../app';
+import { PrismaUserRepository } from '../user-management/infra/prisma/user.repository';
+import { CreateUserUseCase } from '../user-management/application/use-cases/create-user.use-case';
+import { UserController } from '../user-management/infra/controllers/user.controller';
+import { createUserRoutes } from '../user-management/routes/user.routes';
 
 describe('User Registration', () => {
   let prisma: PrismaClient;
@@ -14,9 +14,7 @@ describe('User Registration', () => {
 
   beforeAll(async () => {
     prisma = new PrismaClient();
-    userRepository = new PrismaUserRepository();
-    createUserUseCase = new CreateUserUseCase(userRepository);
-    userController = new UserController(createUserUseCase);
+    userController = new UserController();
 
     // Configurar las rutas
     const userRoutes = createUserRoutes(userController);
