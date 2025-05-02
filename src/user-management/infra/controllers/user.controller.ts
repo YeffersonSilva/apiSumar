@@ -8,6 +8,7 @@ import {
   UserAlreadyExistsError,
   InvalidUserDataError,
 } from '../../../shared/errors/user.error';
+import { PasswordService } from '../../../shared/services/password.service';
 
 /**
  * Controlador para operaciones relacionadas con usuarios.
@@ -18,7 +19,8 @@ export class UserController {
 
   constructor() {
     const idService = new UuidService();
-    const userRepository = new PrismaUserRepository(idService);
+    const passwordService = new PasswordService();
+    const userRepository = new PrismaUserRepository(idService, passwordService);
     const notificationService = new EmailNotificationService();
     this.createUserUseCase = new CreateUserUseCase(
       userRepository,
