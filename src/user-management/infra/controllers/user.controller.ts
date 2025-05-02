@@ -1,31 +1,28 @@
 import { Request, Response } from 'express';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
-import { createUserSchema } from '../dtos/create-user.dto';
+import { PrismaUserRepository } from '../repositories/user.repository';
 import { UuidService } from '../../../shared/services/uuid.service';
-import { PrismaUserRepository } from '../prisma/user.repository';
-import { EmailNotificationService } from '../../../shared/services/email-notification.service';
-import {
-  UserAlreadyExistsError,
-  InvalidUserDataError,
-} from '../../../shared/errors/user.error';
 import { PasswordService } from '../../../shared/services/password.service';
+import { Authorized } from '../../../shared/decorators/auth.decorator';
 
 /**
  * Controlador para operaciones relacionadas con usuarios.
  * Implementa los endpoints HTTP y maneja las respuestas.
  */
 export class UserController {
-  private readonly createUserUseCase: CreateUserUseCase;
+  private createUserUseCase: CreateUserUseCase;
 
   constructor() {
-    const idService = new UuidService();
+    const uuidService = new UuidService();
     const passwordService = new PasswordService();
-    const userRepository = new PrismaUserRepository(idService, passwordService);
-    const notificationService = new EmailNotificationService();
+    const userRepository = new PrismaUserRepository(
+      uuidService,
+      passwordService,
+    );
     this.createUserUseCase = new CreateUserUseCase(
       userRepository,
-      idService,
-      notificationService,
+      uuidService,
+      passwordService,
     );
   }
 
@@ -35,54 +32,113 @@ export class UserController {
    * @param res Response HTTP
    * @returns Response con el usuario creado o error
    */
-  async create(req: Request, res: Response): Promise<Response> {
+  async createUser(req: Request, res: Response): Promise<Response> {
     try {
       console.log('Received data:', req.body);
 
-      // Validate input data
-      const result = createUserSchema.safeParse(req.body);
-      if (!result.success) {
-        console.log('Validation error:', result.error);
-        return res.status(400).json({
-          error: 'Invalid data',
-          details: result.error.errors,
-        });
-      }
-
-      const { email, name, password } = result.data;
-
       // Execute use case
-      const user = await this.createUserUseCase.execute(email, name, password);
+      const result = await this.createUserUseCase.execute(req.body);
 
       // Return success response
-      return res.status(201).json({
-        id: user.getId(),
-        email: user.getEmail(),
-        name: user.getName(),
-        createdAt: user.getCreatedAt(),
-      });
+      return res.status(201).json(result);
     } catch (error) {
       console.error('Controller error:', error);
 
-      if (error instanceof UserAlreadyExistsError) {
-        return res.status(409).json({
-          error: 'User already exists',
-          message: error.message,
-        });
-      }
+      return res.status(400).json({
+        status: 'error',
+        message:
+          error instanceof Error ? error.message : 'Error al crear usuario',
+      });
+    }
+  }
 
-      if (error instanceof InvalidUserDataError) {
-        return res.status(400).json({
-          error: 'Invalid user data',
-          message: error.message,
-        });
-      }
-
-      // Unexpected error
-      console.error('Unexpected error:', error);
+  // Ruta protegida para cualquier usuario autenticado
+  @Authorized()
+  async getCurrentUser(req: Request, res: Response): Promise<Response> {
+    try {
+      const userId = req.user?.sub;
+      // Implementar lógica para obtener usuario actual
+      return res
+        .status(200)
+        .json({ message: 'Obtener usuario actual', userId });
+    } catch (error) {
       return res.status(500).json({
-        error: 'Internal server error',
-        message: 'An unexpected error occurred',
+        status: 'error',
+        message: 'Error al obtener usuario actual',
+      });
+    }
+  }
+
+  @Authorized()
+  async updateCurrentUser(req: Request, res: Response): Promise<Response> {
+    try {
+      const userId = req.user?.sub;
+      return res
+        .status(200)
+        .json({ message: 'Actualizar usuario actual', userId });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error al actualizar usuario actual',
+      });
+    }
+  }
+
+  // Ruta protegida solo para ADMIN
+  @Authorized('ADMIN')
+  async listUsers(req: Request, res: Response): Promise<Response> {
+    try {
+      // Implementar lógica para listar usuarios
+      return res.status(200).json({ message: 'Listar usuarios' });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error al listar usuarios',
+      });
+    }
+  }
+
+  // Ruta protegida solo para ADMIN
+  @Authorized('ADMIN')
+  async getUserById(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      // Implementar lógica para obtener usuario por ID
+      return res.status(200).json({ message: 'Obtener usuario por ID', id });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error al obtener usuario',
+      });
+    }
+  }
+
+  // Ruta protegida solo para ADMIN
+  @Authorized('ADMIN')
+  async updateUser(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      // Implementar lógica para actualizar usuario
+      return res.status(200).json({ message: 'Actualizar usuario', id });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error al actualizar usuario',
+      });
+    }
+  }
+
+  // Ruta protegida solo para ADMIN
+  @Authorized('ADMIN')
+  async deleteUser(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      // Implementar lógica para eliminar usuario
+      return res.status(200).json({ message: 'Eliminar usuario', id });
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error al eliminar usuario',
       });
     }
   }

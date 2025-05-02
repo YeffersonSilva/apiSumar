@@ -63,6 +63,7 @@
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^3.22.4"
