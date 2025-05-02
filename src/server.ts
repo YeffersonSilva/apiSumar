@@ -1,9 +1,10 @@
+import 'reflect-metadata';
 import { app } from './app';
 import { env } from './shared/config/env';
 
-const PORT = env.port;
+const PORT = env.PORT;
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`Ambiente: ${env.nodeEnv}`);
-}); 
+  console.log(`Ambiente: ${env.NODE_ENV}`);
+});
