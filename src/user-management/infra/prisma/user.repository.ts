@@ -10,13 +10,18 @@ import { IdService } from '../../domain/interfaces/id.service.interface';
 export class PrismaUserRepository implements UserRepositoryPort {
   private prisma: PrismaClient;
 
-  constructor(private readonly idService: IdService) {
+  constructor(
+    private readonly idService: IdService,
+    private readonly passwordService: PasswordService,
+  ) {
     this.prisma = new PrismaClient();
   }
 
   async create(user: User): Promise<User> {
     try {
-      const hashedPassword = await PasswordService.hash(user.getPassword());
+      const hashedPassword = await this.passwordService.hash(
+        user.getPassword(),
+      );
 
       const prismaUser = await this.prisma.user.create({
         data: {
@@ -86,7 +91,9 @@ export class PrismaUserRepository implements UserRepositoryPort {
 
   async update(user: User): Promise<User> {
     try {
-      const hashedPassword = await PasswordService.hash(user.getPassword());
+      const hashedPassword = await this.passwordService.hash(
+        user.getPassword(),
+      );
 
       const prismaUser = await this.prisma.user.update({
         where: { id: user.getId() },
