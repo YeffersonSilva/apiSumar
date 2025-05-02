@@ -1,10 +1,13 @@
 import { IdService } from './interfaces/id.service.interface';
 
+export type UserRole = 'USER' | 'ADMIN';
+
 export class User {
   private readonly id: string;
   private readonly email: string;
   private readonly name: string;
   private readonly password: string;
+  private readonly role: UserRole;
   private readonly createdAt: Date;
 
   private constructor(
@@ -12,12 +15,14 @@ export class User {
     email: string,
     name: string,
     password: string,
+    role: UserRole,
     createdAt: Date,
   ) {
     this.id = id;
     this.email = email;
     this.name = name;
     this.password = password;
+    this.role = role;
     this.createdAt = createdAt;
   }
 
@@ -26,6 +31,7 @@ export class User {
     name: string,
     password: string,
     idService: IdService,
+    role: UserRole = 'USER',
   ): User {
     // Basic validations
     if (!email || !email.includes('@')) {
@@ -45,6 +51,7 @@ export class User {
       email.toLowerCase().trim(),
       name.trim(),
       password,
+      role,
       new Date(),
     );
   }
@@ -64,6 +71,10 @@ export class User {
 
   public getPassword(): string {
     return this.password;
+  }
+
+  public getRole(): UserRole {
+    return this.role;
   }
 
   public getCreatedAt(): Date {
