@@ -79,6 +79,25 @@ describe('Auth Routes Tests', () => {
 
       expect(response.body).toHaveProperty('error', 'Invalid token');
     });
+
+    test('Acceso con token expirado debe responder 401 Unauthorized', async () => {
+      // Crear token que expira en 1 segundo
+      const expiredToken = jwt.sign(
+        { userId: userToken, role: 'USER' },
+        process.env.JWT_SECRET || 'secret',
+        { expiresIn: '1s' },
+      );
+
+      // Esperar 2 segundos para asegurar que el token expire
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const response = await request(app)
+        .get('/api/users/me')
+        .set('Authorization', `Bearer ${expiredToken}`)
+        .expect(401);
+
+      expect(response.body).toHaveProperty('error', 'Token expired');
+    });
   });
 
   describe('Role Middleware Tests', () => {
