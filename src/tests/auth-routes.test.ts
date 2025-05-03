@@ -11,7 +11,7 @@ describe('Auth Routes Tests', () => {
   let invalidToken: string;
 
   beforeAll(async () => {
-    // Crear usuario normal
+    // Create regular user
     const user = await prisma.user.create({
       data: {
         email: 'testuser@example.com',
@@ -21,7 +21,7 @@ describe('Auth Routes Tests', () => {
       },
     });
 
-    // Crear usuario admin
+    // Create admin user
     const admin = await prisma.user.create({
       data: {
         email: 'testadmin@example.com',
@@ -31,7 +31,7 @@ describe('Auth Routes Tests', () => {
       },
     });
 
-    // Generar tokens
+    // Generate tokens
     userToken = jwt.sign(
       { userId: user.id, role: 'USER' },
       process.env.JWT_SECRET || 'secret',
@@ -44,7 +44,7 @@ describe('Auth Routes Tests', () => {
   });
 
   afterAll(async () => {
-    // Limpiar la base de datos
+    // Clean up database
     await prisma.user.deleteMany({
       where: {
         email: {
@@ -56,13 +56,13 @@ describe('Auth Routes Tests', () => {
   });
 
   describe('Auth Middleware Tests', () => {
-    test('Acceso sin token debe responder 401 Unauthorized', async () => {
+    test('Access without token should return 401 Unauthorized', async () => {
       const response = await request(app).get('/api/users/me').expect(401);
 
       expect(response.body).toHaveProperty('error', 'No token provided');
     });
 
-    test('Acceso con token válido debe responder 200 OK', async () => {
+    test('Access with valid token should return 200 OK', async () => {
       const response = await request(app)
         .get('/api/users/me')
         .set('Authorization', `Bearer ${userToken}`)
@@ -71,7 +71,7 @@ describe('Auth Routes Tests', () => {
       expect(response.body).toHaveProperty('email');
     });
 
-    test('Acceso con token inválido debe responder 401 Unauthorized', async () => {
+    test('Access with invalid token should return 401 Unauthorized', async () => {
       const response = await request(app)
         .get('/api/users/me')
         .set('Authorization', `Bearer ${invalidToken}`)
@@ -80,15 +80,15 @@ describe('Auth Routes Tests', () => {
       expect(response.body).toHaveProperty('error', 'Invalid token');
     });
 
-    test('Acceso con token expirado debe responder 401 Unauthorized', async () => {
-      // Crear token que expira en 1 segundo
+    test('Access with expired token should return 401 Unauthorized', async () => {
+      // Create token that expires in 1 second
       const expiredToken = jwt.sign(
-        { userId: userToken, role: 'USER' },
+        { userId: 'test-user-id', role: 'USER' },
         process.env.JWT_SECRET || 'secret',
         { expiresIn: '1s' },
       );
 
-      // Esperar 2 segundos para asegurar que el token expire
+      // Wait 2 seconds to ensure token expires
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const response = await request(app)
@@ -101,7 +101,7 @@ describe('Auth Routes Tests', () => {
   });
 
   describe('Role Middleware Tests', () => {
-    test('Usuario USER intentando acceder a ruta ADMIN debe responder 403 Forbidden', async () => {
+    test('USER role trying to access ADMIN route should return 403 Forbidden', async () => {
       const response = await request(app)
         .get('/api/admin/users')
         .set('Authorization', `Bearer ${userToken}`)
@@ -110,7 +110,7 @@ describe('Auth Routes Tests', () => {
       expect(response.body).toHaveProperty('error', 'Insufficient permissions');
     });
 
-    test('Usuario ADMIN accediendo a ruta ADMIN debe responder 200 OK', async () => {
+    test('ADMIN role accessing ADMIN route should return 200 OK', async () => {
       const response = await request(app)
         .get('/api/admin/users')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -121,7 +121,7 @@ describe('Auth Routes Tests', () => {
   });
 
   describe('Success Cases', () => {
-    test('Usuario USER puede acceder a rutas protegidas que requieren solo autenticación', async () => {
+    test('USER can access protected routes requiring only authentication', async () => {
       const response = await request(app)
         .get('/api/users/me')
         .set('Authorization', `Bearer ${userToken}`)
@@ -130,8 +130,8 @@ describe('Auth Routes Tests', () => {
       expect(response.body).toHaveProperty('email', 'testuser@example.com');
     });
 
-    test('Usuario ADMIN puede acceder a cualquier ruta', async () => {
-      // Probar acceso a ruta USER
+    test('ADMIN can access any route', async () => {
+      // Test USER route access
       const userRouteResponse = await request(app)
         .get('/api/users/me')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -142,7 +142,7 @@ describe('Auth Routes Tests', () => {
         'testadmin@example.com',
       );
 
-      // Probar acceso a ruta ADMIN
+      // Test ADMIN route access
       const adminRouteResponse = await request(app)
         .get('/api/admin/users')
         .set('Authorization', `Bearer ${adminToken}`)
