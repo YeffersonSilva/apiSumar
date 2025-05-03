@@ -17,6 +17,7 @@ describe('Auth Routes Tests', () => {
         email: 'testuser@example.com',
         password: 'password123',
         role: 'USER',
+        name: 'Test User',
       },
     });
 
@@ -26,6 +27,7 @@ describe('Auth Routes Tests', () => {
         email: 'testadmin@example.com',
         password: 'password123',
         role: 'ADMIN',
+        name: 'Test Admin',
       },
     });
 
