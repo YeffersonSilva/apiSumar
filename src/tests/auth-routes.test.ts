@@ -59,7 +59,13 @@ describe('Auth Routes Tests', () => {
     test('Access without token should return 401 Unauthorized', async () => {
       const response = await request(app).get('/api/users/me').expect(401);
 
-      expect(response.body).toHaveProperty('error', 'No token provided');
+      expect(response.body).toEqual({
+        success: false,
+        error: {
+          code: 401,
+          message: 'Token no proporcionado',
+        },
+      });
     });
 
     test('Access with valid token should return 200 OK', async () => {
@@ -77,7 +83,13 @@ describe('Auth Routes Tests', () => {
         .set('Authorization', `Bearer ${invalidToken}`)
         .expect(401);
 
-      expect(response.body).toHaveProperty('error', 'Invalid token');
+      expect(response.body).toEqual({
+        success: false,
+        error: {
+          code: 401,
+          message: 'Token inválido o expirado',
+        },
+      });
     });
 
     test('Access with expired token should return 401 Unauthorized', async () => {
@@ -96,7 +108,13 @@ describe('Auth Routes Tests', () => {
         .set('Authorization', `Bearer ${expiredToken}`)
         .expect(401);
 
-      expect(response.body).toHaveProperty('error', 'Token expired');
+      expect(response.body).toEqual({
+        success: false,
+        error: {
+          code: 401,
+          message: 'Token inválido o expirado',
+        },
+      });
     });
   });
 
@@ -107,7 +125,13 @@ describe('Auth Routes Tests', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .expect(403);
 
-      expect(response.body).toHaveProperty('error', 'Insufficient permissions');
+      expect(response.body).toEqual({
+        success: false,
+        error: {
+          code: 403,
+          message: 'No tienes permisos para acceder a este recurso',
+        },
+      });
     });
 
     test('ADMIN role accessing ADMIN route should return 200 OK', async () => {
