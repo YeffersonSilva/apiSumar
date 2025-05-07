@@ -1,21 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
+import { UnauthorizedError, ForbiddenError } from '../errors/http-error';
 
 export function roleMiddleware(requiredRole: 'USER' | 'ADMIN') {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ 
-        status: 'error',
-        message: 'No autenticado' 
-      });
+      throw new UnauthorizedError('No autenticado');
     }
 
     if (req.user.role !== requiredRole) {
-      return res.status(403).json({ 
-        status: 'error',
-        message: 'No tienes permisos para acceder a este recurso' 
-      });
+      throw new ForbiddenError(
+        'No tienes permisos para acceder a este recurso',
+      );
     }
 
     next();
   };
-} 
+}
