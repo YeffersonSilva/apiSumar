@@ -22,12 +22,55 @@ datasource db {
 //   createdAt DateTime @default(now())
 // }
 
+enum CampaignType {
+  DONATION
+  CROWDFUNDING
+}
+
+enum CampaignCategory {
+  EDUCATION
+  HEALTH
+  ENVIRONMENT
+  ANIMALS
+  EMERGENCY
+  OTHER
+}
+
+enum CampaignStatus {
+  ACTIVE
+  CLOSED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String     @default("USER")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  campaigns Campaign[] // Relación con las campañas creadas por el usuario
+}
+
+model Campaign {
+  id            String           @id @default(uuid())
+  title         String
+  description   String
+  goalAmount    Float
+  currentAmount Float            @default(0)
+  type          CampaignType
+  category      CampaignCategory
+  status        CampaignStatus   @default(ACTIVE)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relaciones
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  // Índices
+  @@index([ownerId])
+  @@index([status])
+  @@index([type])
+  @@index([category])
 }
