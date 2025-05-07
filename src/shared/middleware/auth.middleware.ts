@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { TokenService } from '../services/token.service';
+import { UnauthorizedError } from '../errors/http-error';
 
 export function authMiddleware(
   req: Request,
@@ -9,10 +10,7 @@ export function authMiddleware(
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token no proporcionado',
-    });
+    throw new UnauthorizedError('Token no proporcionado');
   }
 
   const token = authHeader.split(' ')[1];
@@ -23,9 +21,6 @@ export function authMiddleware(
     req.user = payload;
     next();
   } catch (error) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token inválido o expirado',
-    });
+    throw new UnauthorizedError('Token inválido o expirado');
   }
 }
