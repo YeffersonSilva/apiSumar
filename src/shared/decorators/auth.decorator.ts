@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { roleMiddleware } from '../middleware/role.middleware';
+import { UnauthorizedError } from '../errors/http-error';
 
 export function Authorized(role?: 'USER' | 'ADMIN') {
   return function (
@@ -37,10 +38,10 @@ export function Authorized(role?: 'USER' | 'ADMIN') {
         // Si todo está bien, ejecutar el método original
         return originalMethod.call(this, req, res, next);
       } catch (error) {
-        return res.status(401).json({
-          status: 'error',
-          message: error instanceof Error ? error.message : 'No autorizado',
-        });
+        if (error instanceof UnauthorizedError) {
+          throw error;
+        }
+        throw new UnauthorizedError('No autorizado');
       }
     };
 

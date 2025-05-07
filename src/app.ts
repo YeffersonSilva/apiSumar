@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import { UserController } from './user-management/infra/controllers/user.controller';
 import { createUserRoutes } from './user-management/routes/user.routes';
 import { createAuthRoutes } from './user-management/routes/auth.routes';
+import { errorHandler } from './shared/middleware/error-handler.middleware';
 
 const app = express();
 
@@ -29,17 +30,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'API funcionando correctamente' });
 });
 
-// Manejo de errores
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Algo salió mal!' });
-  },
-);
+// Middleware de manejo de errores global
+app.use(errorHandler);
 
 export { app };
